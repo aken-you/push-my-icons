@@ -2,16 +2,7 @@
   "name": "push-my-icons",
   "id": "1500058387867124676",
   "api": "1.0.0",
-  "main": "code.js",
-  "capabilities": [],
-  "enableProposedApi": false,
-  "documentAccess": "dynamic-page",
-  "editorType": [
-    "figma"
-  ],
-  "networkAccess": {
-    "allowedDomains": [
-      "none"
-    ]
-  }
+  "main": "dist/plugin.js",
+  "ui": "dist/ui.html",
+  "editorType": ["figma"]
 }
