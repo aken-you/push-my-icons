@@ -5,7 +5,7 @@
     "jsx": "react-jsx",
     "moduleResolution": "Node",
     "strict": true,
-    "types": ["@figma/plugin-typings"],
+    "typeRoots": ["./node_modules/@types", "./node_modules/@figma"],
     "outDir": "dist"
   },
   "include": ["packages/**/*.ts", "packages/**/*.tsx"],
