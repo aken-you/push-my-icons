@@ -1,5 +1,6 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const HtmlInlineScriptPlugin = require("html-inline-script-webpack-plugin");
 
 module.exports = (env, argv) => ({
   mode: argv.mode === "production" ? "production" : "development",
@@ -18,7 +19,7 @@ module.exports = (env, argv) => ({
   },
 
   resolve: {
-    extensions: [".ts", ".js", ".tsx", ".jsx"],
+    extensions: [".ts", ".js", ".tsx", ".jsx", ".css"],
   },
   module: {
     rules: [
@@ -31,6 +32,10 @@ module.exports = (env, argv) => ({
         test: /\.css$/,
         use: ["style-loader", "css-loader"],
       },
+      {
+        test: /\.svg/,
+        type: "asset/inline",
+      },
     ],
   },
   plugins: [
@@ -39,6 +44,10 @@ module.exports = (env, argv) => ({
       template: "./packages/ui/index.html",
       filename: "ui.html",
       chunks: ["ui"],
+    }),
+    new HtmlInlineScriptPlugin({
+      htmlMatchPattern: [/ui.html/],
+      scriptMatchPattern: [/.js$/],
     }),
   ],
 });
