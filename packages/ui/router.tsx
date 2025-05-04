@@ -1,8 +1,8 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createMemoryRouter } from "react-router-dom";
 import { Create } from "./pages/create";
 import { Result } from "./pages/result";
 
-export const router = createBrowserRouter([
+export const router = createMemoryRouter([
   {
     path: "/",
     children: [
