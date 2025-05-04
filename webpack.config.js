@@ -1,7 +1,12 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
-module.exports = {
+module.exports = (env, argv) => ({
+  mode: argv.mode === "production" ? "production" : "development",
+
+  // This is necessary because Figma's 'eval' works differently than normal eval
+  devtool: argv.mode === "production" ? false : "inline-source-map",
+
   entry: {
     plugin: "./packages/plugin/index.ts",
     ui: "./packages/ui/index.tsx",
@@ -36,4 +41,4 @@ module.exports = {
       chunks: ["ui"],
     }),
   ],
-};
+});
