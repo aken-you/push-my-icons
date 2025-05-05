@@ -31,6 +31,7 @@ module.exports = (env, argv) => ({
       {
         test: /\.css$/,
         use: ["style-loader", "css-loader"],
+        include: path.resolve(__dirname, "packages/ui"),
       },
       {
         test: /\.svg/,
