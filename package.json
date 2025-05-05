@@ -56,7 +56,7 @@
     ]
   },
   "dependencies": {
-    "@octokit/rest": "^21.1.1",
+    "@octokit/core": "^6.1.5",
     "@tailwindcss/postcss": "^4.1.5",
     "postcss": "^8.5.3",
     "react": "^19.1.0",
