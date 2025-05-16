@@ -1,4 +1,5 @@
 import { Octokit } from "@octokit/core";
+import { SVGNode } from "../../types";
 
 // 레포의 기본 브랜치 정보 가져오기
 export const getBaseBranch = async ({
@@ -88,19 +89,16 @@ export const uploadSvgNodes = async ({
   owner: string;
   repo: string;
   folderPath: string;
-  svgNodes: SceneNode[];
+  svgNodes: SVGNode[];
 }): Promise<{ path: string; mode: "100644"; type: "blob"; sha: string }[]> => {
   return Promise.all(
     svgNodes.map(async (node) => {
-      const svgBytes = await node.exportAsync({ format: "SVG" });
-      const svgText = new TextDecoder().decode(svgBytes);
-
       const { data } = await octokit.request(
         `POST /repos/${owner}/${repo}/git/blobs`,
         {
           owner,
           repo,
-          content: svgText,
+          content: node.svgText,
           encoding: "utf-8",
           headers: {
             "X-GitHub-Api-Version": "2022-11-28",
