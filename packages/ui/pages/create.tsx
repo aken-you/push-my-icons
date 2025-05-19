@@ -113,7 +113,7 @@ export const Create = () => {
             branchName: newBranchName,
           });
 
-          await createPullRequest({
+          const prUrl = await createPullRequest({
             octokit,
             owner,
             repo,
@@ -121,7 +121,11 @@ export const Create = () => {
             baseBranch,
           });
 
-          navigate("/result");
+          navigate("/result", {
+            state: {
+              prUrl,
+            },
+          });
         } catch (error) {
           if (error instanceof Error) {
             console.error("Error: " + error.message);
@@ -132,7 +136,7 @@ export const Create = () => {
   }, [repoUrl, token, folderPath]);
 
   return (
-    <div className="p-4 max-w-md mx-auto space-y-4">
+    <div className="space-y-4">
       <h1 className="text-xl font-semibold">Create Pull Request</h1>
 
       <div className="space-y-2">

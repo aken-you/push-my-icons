@@ -216,5 +216,5 @@ export const createPullRequest = async ({
     },
   });
 
-  return data;
+  return data.html_url;
 };
