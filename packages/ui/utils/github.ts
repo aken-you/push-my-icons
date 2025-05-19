@@ -68,7 +68,7 @@ export const createBranchName = async ({
   await octokit.request(`POST /repos/${owner}/${repo}/git/refs`, {
     owner,
     repo,
-    ref: `heads/${branchName}`,
+    ref: `refs/heads/${branchName}`,
     sha: latestCommitSha,
     headers: {
       "X-GitHub-Api-Version": "2022-11-28",
@@ -151,7 +151,6 @@ export const createNewCommit = async ({
   octokit,
   owner,
   repo,
-  message,
   treeSha,
   parentSha,
   branchName,
@@ -159,7 +158,6 @@ export const createNewCommit = async ({
   octokit: Octokit;
   owner: string;
   repo: string;
-  message: string;
   treeSha: string;
   parentSha: string;
   branchName: string;
@@ -169,7 +167,7 @@ export const createNewCommit = async ({
     {
       owner,
       repo,
-      message,
+      message: "Update icons from Figma",
       parents: [parentSha],
       tree: treeSha,
       headers: {

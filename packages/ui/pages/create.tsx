@@ -1,9 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { SVGNode, UIMessageType } from "../../types";
+import { Octokit } from "@octokit/core";
+import {
+  createBranchName,
+  createNewCommit,
+  createNewTree,
+  createPullRequest,
+  getBaseBranch,
+  getLatestCommitSha,
+  uploadSvgNodes,
+} from "../utils/github";
+import { useNavigate } from "react-router-dom";
 
 export const Create = () => {
   const [token, setToken] = useState("");
   const [repoUrl, setRepoUrl] = useState("");
   const [folderPath, setFolderPath] = useState("");
+
+  const navigate = useNavigate();
 
   const handlePush = async () => {
     const match = repoUrl.match(/github\.com\/([^/]+)\/([^/]+)(?:\.git)?/);
@@ -13,25 +27,109 @@ export const Create = () => {
       return;
     }
 
-    const [_, owner, repo] = match;
+    // 1. 버튼 클릭
+    parent.postMessage(
+      {
+        pluginMessage: {
+          type: "extractIcons",
+        },
+      },
+      "*"
+    );
+  };
 
-    try {
-      parent.postMessage(
-        {
-          pluginMessage: {
-            type: "createPullRequest",
-            token,
+  useEffect(() => {
+    // 2. Figma에서 SVG 노드 추출
+    window.onmessage = async (event: MessageEvent<UIMessageType>) => {
+      const { type, payload } = event.data.pluginMessage;
+
+      if (type === "extractIcons") {
+        const { nodes } = payload;
+
+        const decoder = new TextDecoder("utf-8");
+        const svgNodes: SVGNode[] = nodes.map((node) => ({
+          id: node.id,
+          name: node.name,
+          svgText: decoder.decode(node.node),
+        }));
+
+        const octokit = new Octokit({
+          auth: token,
+        });
+
+        const match = repoUrl.match(/github\.com\/([^/]+)\/([^/]+)(?:\.git)?/);
+
+        if (!match) {
+          alert("repository URL is invalid.");
+          return;
+        }
+
+        const owner = match[1];
+        const repo = match[2];
+
+        try {
+          const baseBranch = await getBaseBranch({
+            octokit,
+            owner,
+            repo,
+          });
+
+          const latestCommitSha = await getLatestCommitSha({
+            baseBranch,
+            octokit,
+            owner,
+            repo,
+          });
+
+          const newBranchName = await createBranchName({
+            octokit,
+            owner,
+            repo,
+            latestCommitSha,
+          });
+
+          const svgNodesInfo = await uploadSvgNodes({
+            octokit,
             owner,
             repo,
             folderPath,
-          },
-        },
-        "*"
-      );
-    } catch (error) {
-      console.error("Error sending message to plugin:", error);
-    }
-  };
+            svgNodes,
+          });
+
+          const treeSha = await createNewTree({
+            octokit,
+            owner,
+            repo,
+            baseTreeSha: latestCommitSha,
+            tree: svgNodesInfo,
+          });
+
+          await createNewCommit({
+            octokit,
+            owner,
+            repo,
+            treeSha,
+            parentSha: latestCommitSha,
+            branchName: newBranchName,
+          });
+
+          await createPullRequest({
+            octokit,
+            owner,
+            repo,
+            branchName: newBranchName,
+            baseBranch,
+          });
+
+          navigate("/result");
+        } catch (error) {
+          if (error instanceof Error) {
+            console.error("Error: " + error.message);
+          }
+        }
+      }
+    };
+  }, [repoUrl, token, folderPath]);
 
   return (
     <div className="p-4 max-w-md mx-auto space-y-4">
@@ -72,7 +170,7 @@ export const Create = () => {
       <button
         onClick={handlePush}
         disabled={!token || !repoUrl || !folderPath}
-        className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+        className="w-full bg-blue-600 text-white py-2 rounded enabled:hover:bg-blue-700 disabled:opacity-15"
       >
         Push
       </button>

@@ -3,7 +3,7 @@ import { getSvgNodes } from "./utils";
 // Figma 플러그인의 UI 사이즈 설정
 figma.showUI(__html__, { width: 400, height: 600 });
 
-const extractSvgNodes = () => {
+const extractSvgNodes = async () => {
   const selectedFrames = figma.currentPage.selection;
   const selectedFrame = selectedFrames[0];
 
@@ -11,9 +11,8 @@ const extractSvgNodes = () => {
     selectedFrames.length > 0 && selectedFrame.type === "FRAME";
 
   if (!isSelectedFrame) {
-    figma.ui.postMessage({
-      type: "error",
-      message: "select a frame which contains SVG nodes",
+    figma.notify("select a frame which contains SVG nodes", {
+      error: true,
     });
     return;
   }
@@ -21,14 +20,21 @@ const extractSvgNodes = () => {
   const svgNodes = getSvgNodes(selectedFrame);
 
   if (svgNodes.length === 0) {
-    figma.ui.postMessage({
-      type: "error",
-      message: "no SVG nodes found in the selected frame",
+    figma.notify("no SVG nodes found in the selected frame", {
+      error: true,
     });
     return;
   }
 
-  return svgNodes;
+  const svgNodesData = await Promise.all(
+    svgNodes.map(async (node) => {
+      // node가 svg 형태로 export한 결과
+      const svg = await node.exportAsync({ format: "SVG" });
+      return { id: node.id, name: node.name, node: svg };
+    })
+  );
+
+  return svgNodesData;
 };
 
 interface ExtractIcons {
@@ -40,8 +46,15 @@ type MessageType = ExtractIcons;
 // UI로부터 메세지를 받아 처리
 figma.ui.onmessage = async (msg: MessageType) => {
   if (msg.type === "extractIcons") {
-    const svgNodes = extractSvgNodes();
+    const svgNodes = await extractSvgNodes();
 
     if (!svgNodes) return;
+
+    figma.ui.postMessage({
+      type: "extractIcons",
+      payload: {
+        nodes: svgNodes,
+      },
+    });
   }
 };
