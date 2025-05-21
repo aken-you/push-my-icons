@@ -8,6 +8,7 @@ import {
   createPullRequest,
   getBaseBranch,
   getLatestCommitSha,
+  getTree,
   uploadSvgNodes,
 } from "../utils/github";
 import { useNavigate } from "react-router-dom";
@@ -88,20 +89,50 @@ export const Create = () => {
             latestCommitSha,
           });
 
-          const svgNodesInfo = await uploadSvgNodes({
+          const createdBlobs = await uploadSvgNodes({
             octokit,
             owner,
             repo,
             folderPath,
             svgNodes,
           });
+          const newPaths = createdBlobs.map((file) => file.path);
+
+          const previousTree = await getTree({
+            octokit,
+            owner,
+            repo,
+            treeSha: latestCommitSha,
+          }).then((data) =>
+            data.filter(
+              (file) =>
+                file.path.startsWith(folderPath + "/") &&
+                file.path.endsWith(".svg")
+            )
+          );
+          const existingPaths = previousTree.map((file) => file.path);
+
+          const newTree: {
+            path: string;
+            mode: "100644";
+            type: "blob";
+            sha: string | null;
+          }[] = previousTree.map((file) => ({
+            path: file.path,
+            mode: "100644",
+            type: "blob",
+            sha:
+              existingPaths.includes(file.path) && !newPaths.includes(file.path)
+                ? null
+                : file.sha,
+          }));
 
           const treeSha = await createNewTree({
             octokit,
             owner,
             repo,
             baseTreeSha: latestCommitSha,
-            tree: svgNodesInfo,
+            tree: newTree,
           });
 
           await createNewCommit({

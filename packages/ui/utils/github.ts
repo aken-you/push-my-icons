@@ -51,6 +51,42 @@ export const getLatestCommitSha = async ({
   return data.object.sha;
 };
 
+// 트리 정보 가져오기
+export const getTree = async ({
+  octokit,
+  owner,
+  repo,
+  treeSha,
+}: {
+  octokit: Octokit;
+  owner: string;
+  repo: string;
+  treeSha: string;
+}): Promise<
+  {
+    path: string;
+    mode: "100644";
+    type: "blob";
+    size: number;
+    sha: string;
+    url: string;
+  }[]
+> => {
+  const { data } = await octokit.request(
+    `GET /repos/${owner}/${repo}/git/trees/${treeSha}?recursive=1`,
+    {
+      owner,
+      repo,
+      treeSha,
+      headers: {
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    }
+  );
+
+  return data.tree;
+};
+
 // 새로운 브랜치 생성
 export const createBranchName = async ({
   octokit,
@@ -128,7 +164,7 @@ export const createNewTree = async ({
   owner: string;
   repo: string;
   baseTreeSha: string;
-  tree: { path: string; mode: "100644"; type: "blob"; sha: string }[];
+  tree: { path: string; mode: "100644"; type: "blob"; sha: string | null }[];
 }) => {
   const { data } = await octokit.request(
     `POST /repos/${owner}/${repo}/git/trees`,
