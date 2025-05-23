@@ -254,6 +254,7 @@ export const Create = () => {
           <div className="space-y-2">
             <label className="block text-sm font-medium">
               GitHub Personal Access Token
+              <span className="text-red-500 ml-1">*</span>
             </label>
             <input
               type="password"
@@ -269,6 +270,7 @@ export const Create = () => {
           <div className="space-y-2">
             <label className="block text-sm font-medium">
               GitHub Repository URL
+              <span className="text-red-500 ml-1">*</span>
             </label>
             <input
               type="text"
@@ -283,7 +285,10 @@ export const Create = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium">SVG Folder Path</label>
+            <label className="block text-sm font-medium">
+              SVG Folder Path
+              <span className="text-red-500 ml-1">*</span>
+            </label>
             <input
               type="text"
               className="w-full border px-2 py-1 rounded"
@@ -299,6 +304,7 @@ export const Create = () => {
           <div className="space-y-2">
             <label className="block text-sm font-medium">
               Pull Request Title
+              <span className="text-red-500 ml-1">*</span>
             </label>
             <input
               type="text"
