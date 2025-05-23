@@ -211,7 +211,7 @@ export const Create = () => {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Create Pull Request</h1>
+      <h1 className="text-xl font-semibold">Push SVG Icons to GitHub</h1>
 
       {loadingStep !== 0 ? (
         <div className="space-y-4">
