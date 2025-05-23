@@ -27,6 +27,11 @@ export const Create = () => {
   const [token, setToken] = useState("");
   const [repoUrl, setRepoUrl] = useState("");
   const [folderPath, setFolderPath] = useState("");
+  const [prTitle, setPrTitle] = useState("Update icons from Figma");
+  const [prBody, setPrBody] = useState(
+    "This PR was created by the Figma plugin to update icons."
+  );
+
   const [loadingStep, setLoadingStep] = useState<LoadingStep | 0>(0);
 
   const navigate = useNavigate();
@@ -185,6 +190,8 @@ export const Create = () => {
             repo,
             branchName: newBranchName,
             baseBranch,
+            title: prTitle,
+            body: prBody,
           });
 
           navigate("/result", {
@@ -200,7 +207,7 @@ export const Create = () => {
         }
       }
     };
-  }, [repoUrl, token, folderPath]);
+  }, [repoUrl, token, folderPath, prTitle, prBody]);
 
   return (
     <div className="space-y-4">
@@ -249,6 +256,29 @@ export const Create = () => {
               value={folderPath}
               onChange={(e) => setFolderPath(e.target.value)}
               placeholder="src/icons"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium">
+              Pull Request Title
+            </label>
+            <input
+              type="text"
+              className="w-full border px-2 py-1 rounded"
+              value={prTitle}
+              onChange={(e) => setPrTitle(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium">
+              Pull Request Body
+            </label>
+            <textarea
+              className="w-full border px-2 py-1 rounded"
+              value={prBody}
+              onChange={(e) => setPrBody(e.target.value)}
             />
           </div>
 

@@ -259,20 +259,24 @@ export const createPullRequest = async ({
   octokit,
   owner,
   repo,
+  title,
+  body,
   branchName,
   baseBranch,
 }: {
   octokit: Octokit;
   owner: string;
   repo: string;
+  title: string;
+  body: string;
   branchName: string;
   baseBranch: string;
 }) => {
   const { data } = await octokit.request(`POST /repos/${owner}/${repo}/pulls`, {
     owner,
     repo,
-    title: "Update icons from Figma",
-    body: "This PR was created by the Figma plugin to update icons.",
+    title,
+    body,
     head: branchName,
     base: baseBranch,
     headers: {
