@@ -164,7 +164,7 @@ export const createNewTree = async ({
   owner: string;
   repo: string;
   baseTreeSha: string;
-  tree: { path: string; mode: "100644"; type: "blob"; sha: string | null }[];
+  tree: { path: string; mode: string; type: string; sha: string | null }[];
 }) => {
   const { data } = await octokit.request(
     `POST /repos/${owner}/${repo}/git/trees`,

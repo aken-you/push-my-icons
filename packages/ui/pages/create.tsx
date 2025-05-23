@@ -96,7 +96,6 @@ export const Create = () => {
             folderPath,
             svgNodes,
           });
-          const newPaths = createdBlobs.map((file) => file.path);
 
           const previousTree = await getTree({
             octokit,
@@ -110,22 +109,28 @@ export const Create = () => {
                 file.path.endsWith(".svg")
             )
           );
-          const existingPaths = previousTree.map((file) => file.path);
 
-          const newTree: {
-            path: string;
-            mode: "100644";
-            type: "blob";
-            sha: string | null;
-          }[] = previousTree.map((file) => ({
-            path: file.path,
-            mode: "100644",
-            type: "blob",
-            sha:
-              existingPaths.includes(file.path) && !newPaths.includes(file.path)
-                ? null
-                : file.sha,
-          }));
+          const createdPaths = createdBlobs.map((file) => file.path);
+          const previousPaths = previousTree.map((file) => file.path);
+          const deletedPaths = previousPaths.filter(
+            (path) =>
+              previousPaths.includes(path) && !createdPaths.includes(path)
+          );
+
+          const newTree = [
+            ...createdBlobs.map((file) => ({
+              path: file.path,
+              mode: "100644",
+              type: "blob",
+              sha: file.sha,
+            })),
+            ...deletedPaths.map((path) => ({
+              path,
+              mode: "100644",
+              type: "blob",
+              sha: null,
+            })),
+          ];
 
           const treeSha = await createNewTree({
             octokit,
