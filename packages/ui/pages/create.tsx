@@ -10,6 +10,7 @@ import {
   getLatestCommitSha,
   getTree,
   createBlobs,
+  isBranchDifferentFromBase,
 } from "../utils/github";
 import { useNavigate } from "react-router-dom";
 
@@ -148,6 +149,19 @@ export const Create = () => {
             parentSha: latestCommitSha,
             branchName: newBranchName,
           });
+
+          const isChanged = await isBranchDifferentFromBase({
+            octokit,
+            owner,
+            repo,
+            baseBranch,
+            branchName: newBranchName,
+          });
+
+          if (!isChanged) {
+            alert("No changes detected. Please check the SVG files.");
+            return;
+          }
 
           const prUrl = await createPullRequest({
             octokit,

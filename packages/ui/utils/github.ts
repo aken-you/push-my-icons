@@ -182,6 +182,34 @@ export const createNewTree = async ({
   return data.sha;
 };
 
+export const isBranchDifferentFromBase = async ({
+  octokit,
+  owner,
+  repo,
+  baseBranch,
+  branchName,
+}: {
+  octokit: Octokit;
+  owner: string;
+  repo: string;
+  baseBranch: string;
+  branchName: string;
+}): Promise<boolean> => {
+  const { data } = await octokit.request(
+    `GET /repos/${owner}/${repo}/compare/${baseBranch}...${branchName}`,
+    {
+      owner,
+      repo,
+      basehead: `${baseBranch}...${branchName}`,
+      headers: {
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    }
+  );
+
+  return data.files.length > 0;
+};
+
 // 새 커밋 생성
 export const createNewCommit = async ({
   octokit,
