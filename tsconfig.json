@@ -1,8 +1,13 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "lib": ["es6"],
+    "target": "ESNext",
+    "module": "ESNext",
+    "jsx": "react-jsx",
+    "moduleResolution": "Node",
     "strict": true,
-    "typeRoots": ["./node_modules/@types", "./node_modules/@figma"]
-  }
+    "typeRoots": ["./node_modules/@types", "./node_modules/@figma"],
+    "outDir": "dist"
+  },
+  "include": ["packages/**/*.ts", "packages/**/*.tsx"],
+  "exclude": ["node_modules", "dist"]
 }
