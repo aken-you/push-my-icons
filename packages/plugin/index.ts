@@ -5,19 +5,18 @@ figma.showUI(__html__, { width: 400, height: 600 });
 
 const extractSvgNodes = async () => {
   const selectedFrames = figma.currentPage.selection;
-  const selectedFrame = selectedFrames[0];
 
-  const isSelectedFrame =
-    selectedFrames.length > 0 && selectedFrame.type === "FRAME";
-
-  if (!isSelectedFrame) {
-    figma.notify("select a frame which contains SVG nodes", {
+  if (
+    selectedFrames.length === 0 ||
+    !selectedFrames.every((frame) => frame.type === "FRAME")
+  ) {
+    figma.notify("select frames which contains SVG nodes", {
       error: true,
     });
     return;
   }
 
-  const svgNodes = getSvgNodes(selectedFrame);
+  const svgNodes = selectedFrames.flatMap((frame) => getSvgNodes(frame));
 
   if (svgNodes.length === 0) {
     figma.notify("no SVG nodes found in the selected frame", {
