@@ -212,6 +212,11 @@ export const Create = () => {
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">Push SVG Icons to GitHub</h1>
+      <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+        <p className="text-sm text-blue-700">
+          Select the parent frames containing SVG icons in Figma before pushing.
+        </p>
+      </div>
 
       {loadingStep !== 0 ? (
         <div className="space-y-4">
