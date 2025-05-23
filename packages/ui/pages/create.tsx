@@ -82,8 +82,7 @@ export const Create = () => {
         const match = repoUrl.match(/github\.com\/([^/]+)\/([^/]+)(?:\.git)?/);
 
         if (!match) {
-          alert("repository URL is invalid.");
-          return;
+          throw new Error("repository URL is invalid.");
         }
 
         const owner = match[1];
@@ -188,7 +187,7 @@ export const Create = () => {
           );
 
           if (!isChanged) {
-            alert("No changes detected. Please check the SVG files.");
+            throw new Error("No changes detected. Please check the SVG files.");
             return;
           }
 
@@ -219,7 +218,7 @@ export const Create = () => {
           });
         } catch (error) {
           if (error instanceof Error) {
-            console.error("Error: " + error.message);
+            alert(error.message);
           }
           setLoadingStep(0);
         }
