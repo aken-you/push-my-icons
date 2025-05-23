@@ -9,7 +9,7 @@ import {
   getBaseBranch,
   getLatestCommitSha,
   getTree,
-  uploadSvgNodes,
+  createBlobs,
 } from "../utils/github";
 import { useNavigate } from "react-router-dom";
 
@@ -89,7 +89,7 @@ export const Create = () => {
             latestCommitSha,
           });
 
-          const createdBlobs = await uploadSvgNodes({
+          const createdBlobs = await createBlobs({
             octokit,
             owner,
             repo,

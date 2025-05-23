@@ -114,7 +114,7 @@ export const createBranchName = async ({
   return branchName;
 };
 
-export const uploadSvgNodes = async ({
+export const createBlobs = async ({
   octokit,
   owner,
   repo,
