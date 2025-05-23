@@ -228,24 +228,34 @@ export const Create = () => {
       ) : (
         <>
           <div className="space-y-2">
-            <label className="block text-sm font-medium">GitHub Token</label>
+            <label className="block text-sm font-medium">
+              GitHub Personal Access Token
+            </label>
             <input
               type="password"
               className="w-full border px-2 py-1 rounded"
               value={token}
               onChange={(e) => setToken(e.target.value)}
             />
+            <p className="text-xs text-gray-500">
+              Your GitHub Personal Access Token with repository permissions.
+            </p>
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium">GitHub Repo URL</label>
+            <label className="block text-sm font-medium">
+              GitHub Repository URL
+            </label>
             <input
               type="text"
               className="w-full border px-2 py-1 rounded"
               value={repoUrl}
               onChange={(e) => setRepoUrl(e.target.value)}
-              placeholder="https://github.com/your_name/your_repo"
+              placeholder="https://github.com/your_name/your_repository"
             />
+            <p className="text-xs text-gray-500">
+              GitHub repository URL where you want to store the SVG icons.
+            </p>
           </div>
 
           <div className="space-y-2">
@@ -257,6 +267,9 @@ export const Create = () => {
               onChange={(e) => setFolderPath(e.target.value)}
               placeholder="src/icons"
             />
+            <p className="text-xs text-gray-500">
+              The path where SVG files will be stored in the repository
+            </p>
           </div>
 
           <div className="space-y-2">
@@ -269,6 +282,9 @@ export const Create = () => {
               value={prTitle}
               onChange={(e) => setPrTitle(e.target.value)}
             />
+            <p className="text-xs text-gray-500">
+              A title for the pull request that will be created.
+            </p>
           </div>
 
           <div className="space-y-2">
@@ -280,11 +296,14 @@ export const Create = () => {
               value={prBody}
               onChange={(e) => setPrBody(e.target.value)}
             />
+            <p className="text-xs text-gray-500">
+              A description for the pull request.
+            </p>
           </div>
 
           <button
             onClick={handlePush}
-            disabled={!token || !repoUrl || !folderPath}
+            disabled={!token || !repoUrl || !folderPath || !prTitle}
             className="w-full bg-blue-600 text-white py-2 rounded enabled:hover:bg-blue-700 disabled:opacity-15"
           >
             Push
