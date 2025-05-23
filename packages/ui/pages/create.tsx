@@ -14,10 +14,20 @@ import {
 } from "../utils/github";
 import { useNavigate } from "react-router-dom";
 
+const LOADING_MESSAGE = {
+  1: "Extracting SVG nodes from Figma...",
+  2: "Creating a new branch...",
+  3: "Creating SVG files...",
+  4: "Creating a pull request...",
+} as const;
+
+type LoadingStep = keyof typeof LOADING_MESSAGE;
+
 export const Create = () => {
   const [token, setToken] = useState("");
   const [repoUrl, setRepoUrl] = useState("");
   const [folderPath, setFolderPath] = useState("");
+  const [loadingStep, setLoadingStep] = useState<LoadingStep | 0>(0);
 
   const navigate = useNavigate();
 
@@ -29,7 +39,8 @@ export const Create = () => {
       return;
     }
 
-    // 1. 버튼 클릭
+    setLoadingStep(1);
+
     parent.postMessage(
       {
         pluginMessage: {
@@ -41,7 +52,6 @@ export const Create = () => {
   };
 
   useEffect(() => {
-    // 2. Figma에서 SVG 노드 추출
     window.onmessage = async (event: MessageEvent<UIMessageType>) => {
       const { type, payload } = event.data.pluginMessage;
 
@@ -54,6 +64,8 @@ export const Create = () => {
           name: node.name,
           svgText: decoder.decode(node.node),
         }));
+
+        setLoadingStep(2);
 
         const octokit = new Octokit({
           auth: token,
@@ -89,6 +101,8 @@ export const Create = () => {
             repo,
             latestCommitSha,
           });
+
+          setLoadingStep(3);
 
           const createdBlobs = await createBlobs({
             octokit,
@@ -163,6 +177,8 @@ export const Create = () => {
             return;
           }
 
+          setLoadingStep(4);
+
           const prUrl = await createPullRequest({
             octokit,
             owner,
@@ -180,6 +196,7 @@ export const Create = () => {
           if (error instanceof Error) {
             console.error("Error: " + error.message);
           }
+          setLoadingStep(0);
         }
       }
     };
@@ -189,45 +206,61 @@ export const Create = () => {
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">Create Pull Request</h1>
 
-      <div className="space-y-2">
-        <label className="block text-sm font-medium">GitHub Token</label>
-        <input
-          type="password"
-          className="w-full border px-2 py-1 rounded"
-          value={token}
-          onChange={(e) => setToken(e.target.value)}
-        />
-      </div>
+      {loadingStep !== 0 ? (
+        <div className="space-y-4">
+          <div className="w-full bg-gray-200 rounded-full h-2.5">
+            <div
+              className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+              style={{ width: `${(loadingStep / 4) * 100}%` }}
+            ></div>
+          </div>
+          <p className="text-center text-gray-600">
+            {LOADING_MESSAGE[loadingStep as keyof typeof LOADING_MESSAGE]}
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium">GitHub Token</label>
+            <input
+              type="password"
+              className="w-full border px-2 py-1 rounded"
+              value={token}
+              onChange={(e) => setToken(e.target.value)}
+            />
+          </div>
 
-      <div className="space-y-2">
-        <label className="block text-sm font-medium">GitHub Repo URL</label>
-        <input
-          type="text"
-          className="w-full border px-2 py-1 rounded"
-          value={repoUrl}
-          onChange={(e) => setRepoUrl(e.target.value)}
-          placeholder="https://github.com/your_name/your_repo"
-        />
-      </div>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium">GitHub Repo URL</label>
+            <input
+              type="text"
+              className="w-full border px-2 py-1 rounded"
+              value={repoUrl}
+              onChange={(e) => setRepoUrl(e.target.value)}
+              placeholder="https://github.com/your_name/your_repo"
+            />
+          </div>
 
-      <div className="space-y-2">
-        <label className="block text-sm font-medium">SVG Folder Path</label>
-        <input
-          type="text"
-          className="w-full border px-2 py-1 rounded"
-          value={folderPath}
-          onChange={(e) => setFolderPath(e.target.value)}
-          placeholder="src/icons"
-        />
-      </div>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium">SVG Folder Path</label>
+            <input
+              type="text"
+              className="w-full border px-2 py-1 rounded"
+              value={folderPath}
+              onChange={(e) => setFolderPath(e.target.value)}
+              placeholder="src/icons"
+            />
+          </div>
 
-      <button
-        onClick={handlePush}
-        disabled={!token || !repoUrl || !folderPath}
-        className="w-full bg-blue-600 text-white py-2 rounded enabled:hover:bg-blue-700 disabled:opacity-15"
-      >
-        Push
-      </button>
+          <button
+            onClick={handlePush}
+            disabled={!token || !repoUrl || !folderPath}
+            className="w-full bg-blue-600 text-white py-2 rounded enabled:hover:bg-blue-700 disabled:opacity-15"
+          >
+            Push
+          </button>
+        </>
+      )}
     </div>
   );
 };
