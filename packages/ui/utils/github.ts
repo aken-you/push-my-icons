@@ -182,7 +182,7 @@ export const createNewTree = async ({
   return data.sha;
 };
 
-export const isBranchDifferentFromBase = async ({
+export const getBranchFileDiffs = async ({
   octokit,
   owner,
   repo,
@@ -194,7 +194,11 @@ export const isBranchDifferentFromBase = async ({
   repo: string;
   baseBranch: string;
   branchName: string;
-}): Promise<boolean> => {
+}): Promise<{
+  addedFiles: string[];
+  modifiedFiles: string[];
+  removedFiles: string[];
+}> => {
   const { data } = await octokit.request(
     `GET /repos/${owner}/${repo}/compare/${baseBranch}...${branchName}`,
     {
@@ -207,7 +211,26 @@ export const isBranchDifferentFromBase = async ({
     }
   );
 
-  return data.files.length > 0;
+  const files: {
+    status: "added" | "modified" | "removed";
+    filename: string;
+  }[] = data.files;
+
+  const addedFiles = files
+    .filter((file) => file.status === "added")
+    .map((f) => f.filename);
+  const modifiedFiles = files
+    .filter((file) => file.status === "modified")
+    .map((f) => f.filename);
+  const removedFiles = files
+    .filter((file) => file.status === "removed")
+    .map((f) => f.filename);
+
+  return {
+    addedFiles,
+    modifiedFiles,
+    removedFiles,
+  };
 };
 
 // 새 커밋 생성
@@ -252,6 +275,38 @@ export const createNewCommit = async ({
       "X-GitHub-Api-Version": "2022-11-28",
     },
   });
+};
+
+// 풀퀘 바디 내용
+export const generatePullRequestBody = ({
+  added,
+  modified,
+  removed,
+}: {
+  added: string[];
+  modified: string[];
+  removed: string[];
+}) => {
+  let body = "### 🧾 Icon Update Summary\n\n";
+
+  if (added.length) {
+    body +=
+      "#### ➕ Added\n" + added.map((f) => `- \`${f}\``).join("\n") + "\n\n";
+  }
+  if (modified.length) {
+    body +=
+      "#### ✏️ Modified\n" +
+      modified.map((f) => `- \`${f}\``).join("\n") +
+      "\n\n";
+  }
+  if (removed.length) {
+    body +=
+      "#### ❌ Removed\n" +
+      removed.map((f) => `- \`${f}\``).join("\n") +
+      "\n\n";
+  }
+
+  return body || "No changes detected.";
 };
 
 // 풀퀘 생성

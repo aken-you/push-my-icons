@@ -10,7 +10,8 @@ import {
   getLatestCommitSha,
   getTree,
   createBlobs,
-  isBranchDifferentFromBase,
+  getBranchFileDiffs,
+  generatePullRequestBody,
 } from "../utils/github";
 import { useNavigate } from "react-router-dom";
 
@@ -31,6 +32,8 @@ export const Create = () => {
   const [prBody, setPrBody] = useState(
     "This PR was created by the Figma plugin to update icons."
   );
+  const [includeChangedFilesSummary, setIncludeChangedFilesSummary] =
+    useState(true);
 
   const [loadingStep, setLoadingStep] = useState<LoadingStep | 0>(0);
 
@@ -132,7 +135,7 @@ export const Create = () => {
 
           const createdPaths = createdBlobs.map((file) => file.path);
           const previousPaths = previousTree.map((file) => file.path);
-          const deletedPaths = previousPaths.filter(
+          const removedPaths = previousPaths.filter(
             (path) =>
               previousPaths.includes(path) && !createdPaths.includes(path)
           );
@@ -144,7 +147,7 @@ export const Create = () => {
               type: "blob",
               sha: file.sha,
             })),
-            ...deletedPaths.map((path) => ({
+            ...removedPaths.map((path) => ({
               path,
               mode: "100644",
               type: "blob",
@@ -169,13 +172,20 @@ export const Create = () => {
             branchName: newBranchName,
           });
 
-          const isChanged = await isBranchDifferentFromBase({
-            octokit,
-            owner,
-            repo,
-            baseBranch,
-            branchName: newBranchName,
-          });
+          const { addedFiles, modifiedFiles, removedFiles } =
+            await getBranchFileDiffs({
+              octokit,
+              owner,
+              repo,
+              baseBranch,
+              branchName: newBranchName,
+            });
+
+          const isChanged = !(
+            addedFiles.length === 0 &&
+            modifiedFiles.length === 0 &&
+            removedFiles.length === 0
+          );
 
           if (!isChanged) {
             alert("No changes detected. Please check the SVG files.");
@@ -191,7 +201,15 @@ export const Create = () => {
             branchName: newBranchName,
             baseBranch,
             title: prTitle,
-            body: prBody,
+            body: includeChangedFilesSummary
+              ? prBody +
+                "\n" +
+                generatePullRequestBody({
+                  added: addedFiles,
+                  modified: modifiedFiles,
+                  removed: removedFiles,
+                })
+              : prBody,
           });
 
           navigate("/result", {
@@ -207,7 +225,7 @@ export const Create = () => {
         }
       }
     };
-  }, [repoUrl, token, folderPath, prTitle, prBody]);
+  }, [repoUrl, token, folderPath, prTitle, prBody, includeChangedFilesSummary]);
 
   return (
     <div className="space-y-4">
@@ -303,6 +321,26 @@ export const Create = () => {
             />
             <p className="text-xs text-gray-500">
               A description for the pull request.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={includeChangedFilesSummary}
+                onChange={(e) =>
+                  setIncludeChangedFilesSummary(e.target.checked)
+                }
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="text-sm text-gray-700">
+                Include changed files list in PR body
+              </span>
+            </label>
+            <p className="text-xs text-gray-500">
+              If checked, the list of added, modified, and removed files will be
+              automatically added to the PR body.
             </p>
           </div>
 
