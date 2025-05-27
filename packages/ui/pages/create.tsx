@@ -259,7 +259,7 @@ export const Create = () => {
         <>
           <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
             <p className="text-sm text-blue-700">
-              Select the parent frames containing SVG icons in Figma before
+              Select all frames that contain SVG icon components in Figma before
               pushing.
             </p>
           </div>
