@@ -13,7 +13,7 @@ import {
   getBranchFileDiffs,
   generatePullRequestBody,
 } from "../utils/github";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const LOADING_MESSAGE = {
   1: "Extracting SVG nodes from Figma...",
@@ -25,19 +25,26 @@ const LOADING_MESSAGE = {
 type LoadingStep = keyof typeof LOADING_MESSAGE;
 
 export const Create = () => {
-  const [token, setToken] = useState("");
-  const [repoUrl, setRepoUrl] = useState("");
-  const [folderPath, setFolderPath] = useState("");
-  const [prTitle, setPrTitle] = useState("Update icons from Figma");
-  const [prBody, setPrBody] = useState(
-    "This PR was created by the Figma plugin to update icons."
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const [token, setToken] = useState(location.state?.token || "");
+  const [repoUrl, setRepoUrl] = useState(location.state?.repoUrl || "");
+  const [folderPath, setFolderPath] = useState(
+    location.state?.folderPath || ""
   );
-  const [includeChangedFilesSummary, setIncludeChangedFilesSummary] =
-    useState(true);
+  const [prTitle, setPrTitle] = useState(
+    location.state?.prTitle || "Update icons from Figma"
+  );
+  const [prBody, setPrBody] = useState(
+    location.state?.prBody ||
+      "This PR was created by the Figma plugin to update icons."
+  );
+  const [includeChangedFilesSummary, setIncludeChangedFilesSummary] = useState(
+    location.state?.includeChangedFilesSummary ?? true
+  );
 
   const [loadingStep, setLoadingStep] = useState<LoadingStep | 0>(0);
-
-  const navigate = useNavigate();
 
   const handlePush = async () => {
     const match = repoUrl.match(/github\.com\/([^/]+)\/([^/]+)(?:\.git)?/);
@@ -214,6 +221,12 @@ export const Create = () => {
           navigate("/result", {
             state: {
               prUrl,
+              token,
+              repoUrl,
+              folderPath,
+              prTitle,
+              prBody,
+              includeChangedFilesSummary,
             },
           });
         } catch (error) {
@@ -246,7 +259,7 @@ export const Create = () => {
         <>
           <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
             <p className="text-sm text-blue-700">
-              Select the parent frames containing SVG icons in Figma before
+              Select all frames that contain SVG icon components in Figma before
               pushing.
             </p>
           </div>
