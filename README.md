@@ -23,7 +23,7 @@ Push your Figma SVG icons to GitHub with ease.
 
 When creating a **Classic** PAT, enable `repo` scope.
 
-<img src="images/how-to-use-1-classic-pat.png" alt="step-1" width="300" />
+<img src="images/how-to-use-1-classic-pat.png" alt="step-1" width="500" />
 
 When creating a **Fine-grained** PAT, scroll down to the Repository permissions section and set the following:
 
@@ -31,20 +31,20 @@ When creating a **Fine-grained** PAT, scroll down to the Repository permissions 
 - Metadata: Read-only
 - Pull requests: Read and write
 
-<img src="images/how-to-use-1-fg-pat.png" alt="step-1" width="300" />
+<img src="images/how-to-use-1-fg-pat.png" alt="step-1" width="500" />
 
 #### Include changed files list in PR body
 
 If this option checked, the list of added, modified, and removed files will be automatically added to the PR body.
 
-<img src="images/how-to-use-1-checkbox.png" alt="step-1" width="300" />
-<img src="images/how-to-use-1-pr-body.png" alt="step-1" width="300" />
+<img src="images/how-to-use-1-checkbox.png" alt="step-1" width="500" />
+<img src="images/how-to-use-1-pr-body.png" alt="step-1" width="500" />
 
 ### 2. Select all frames that contain your SVG icon components.
 
 Each selected frame should be a top-level container for one or more SVGs.
 
-<img src="images/how-to-use-2.png" alt="step-2" width="300" />
+<img src="images/how-to-use-2.png" alt="step-2" width="500" />
 
 ### 3. Click "Push" button.
 
