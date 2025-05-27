@@ -1,40 +1,55 @@
-Below are the steps to get your plugin running. You can also find instructions at:
+## Push My Icons
 
-  https://www.figma.com/plugin-docs/plugin-quickstart-guide/
+Push your Figma SVG icons to GitHub with ease.
 
-This plugin template uses Typescript and NPM, two standard tools in creating JavaScript applications.
+## This plugin helps you:
 
-First, download Node.js which comes with NPM. This will allow you to install TypeScript and other
-libraries. You can find the download link here:
+- Automatically extract SVG nodes
+- Upload them to your GitHub repository
+- Generate a pull request with added/updated/removed icons
 
-  https://nodejs.org/en/download/
+## How to Use
 
-Next, install TypeScript using the command:
+### 1. Open the plugin and fill in the following fields:
 
-  npm install -g typescript
+- GitHub personal access token
+- GitHub repository URL
+- Target folder path in the repo (e.g., src/icons)
+- Pull request title and description
 
-Finally, in the directory of your plugin, get the latest type definitions for the plugin API by running:
+<img src="images/how-to-use-1.png" alt="step-1" width="300" />
 
-  npm install --save-dev @figma/plugin-typings
+#### Github personal access token
 
-If you are familiar with JavaScript, TypeScript will look very familiar. In fact, valid JavaScript code
-is already valid Typescript code.
+When creating a **Classic** PAT, enable `repo` scope.
 
-TypeScript adds type annotations to variables. This allows code editors such as Visual Studio Code
-to provide information about the Figma API while you are writing code, as well as help catch bugs
-you previously didn't notice.
+<img src="images/how-to-use-1-classic-pat.png" alt="step-1" width="300" />
 
-For more information, visit https://www.typescriptlang.org/
+When creating a **Fine-grained** PAT, scroll down to the Repository permissions section and set the following:
 
-Using TypeScript requires a compiler to convert TypeScript (code.ts) into JavaScript (code.js)
-for the browser to run.
+- Contents: Read and write
+- Metadata: Read-only
+- Pull requests: Read and write
 
-We recommend writing TypeScript code using Visual Studio code:
+<img src="images/how-to-use-1-fg-pat.png" alt="step-1" width="300" />
 
-1. Download Visual Studio Code if you haven't already: https://code.visualstudio.com/.
-2. Open this directory in Visual Studio Code.
-3. Compile TypeScript to JavaScript: Run the "Terminal > Run Build Task..." menu item,
-    then select "npm: watch". You will have to do this again every time
-    you reopen Visual Studio Code.
+#### Include changed files list in PR body
 
-That's it! Visual Studio Code will regenerate the JavaScript file every time you save.
+If this option checked, the list of added, modified, and removed files will be automatically added to the PR body.
+
+<img src="images/how-to-use-1-checkbox.png" alt="step-1" width="300" />
+<img src="images/how-to-use-1-pr-body.png" alt="step-1" width="300" />
+
+### 2. Select all frames that contain your SVG icon components.
+
+Each selected frame should be a top-level container for one or more SVGs.
+
+<img src="images/how-to-use-2.png" alt="step-2" width="300" />
+
+### 3. Click "Push" button.
+
+<img src="images/how-to-use-3.png" alt="step-3" width="300" />
+
+### 4. Success
+
+<img src="images/how-to-use-4.png" alt="step-4" width="300" />
