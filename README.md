@@ -1,5 +1,7 @@
 ## Push My Icons
 
+English | [한국어](./README_ko.md)
+
 Push your Figma SVG icons to GitHub with ease.
 
 ## This plugin helps you:
