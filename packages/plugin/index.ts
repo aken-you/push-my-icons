@@ -1,3 +1,4 @@
+import { UIToPluginMessage } from "../types";
 import { getSvgNodes } from "./utils";
 
 // Figma 플러그인의 UI 사이즈 설정
@@ -43,18 +44,8 @@ const extractSvgNodes = async () => {
   return svgNodesData;
 };
 
-interface ExtractIconsMessage {
-  type: "extractIcons";
-}
-
-interface ErrorMessage {
-  type: "error";
-}
-
-type MessageType = ExtractIconsMessage | ErrorMessage;
-
 // UI로부터 메세지를 받아 처리
-figma.ui.onmessage = async (msg: MessageType) => {
+figma.ui.onmessage = async (msg: UIToPluginMessage) => {
   if (msg.type === "extractIcons") {
     const svgNodes = await extractSvgNodes();
 

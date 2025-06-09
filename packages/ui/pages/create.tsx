@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { SVGNode, UIMessageType } from "../../types";
+import { SVGContent, PluginToUIMessage } from "../../types";
 import { Octokit } from "@octokit/core";
 import {
   createBranchName,
@@ -67,7 +67,7 @@ export const Create = () => {
   };
 
   useEffect(() => {
-    window.onmessage = async (event: MessageEvent<UIMessageType>) => {
+    window.onmessage = async (event: MessageEvent<PluginToUIMessage>) => {
       const { type } = event.data.pluginMessage;
 
       if (type === "extractIcons") {
@@ -75,7 +75,7 @@ export const Create = () => {
         const { nodes } = payload;
 
         const decoder = new TextDecoder("utf-8");
-        const svgNodes: SVGNode[] = nodes.map((node) => ({
+        const svgNodes: SVGContent[] = nodes.map((node) => ({
           id: node.id,
           name: node.name,
           svgText: decoder.decode(node.node),

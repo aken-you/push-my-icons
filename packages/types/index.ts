@@ -1,11 +1,16 @@
-export interface SVGNode {
+export interface SVGContent {
   id: string;
   name: string;
   svgText: string;
 }
 
+export const MESSAGE_TYPES = {
+  EXTRACT_ICONS: "extractIcons",
+  ERROR: "error",
+} as const;
+
 interface ExtractIconsMessage {
-  type: "extractIcons";
+  type: typeof MESSAGE_TYPES.EXTRACT_ICONS;
   payload: {
     nodes: {
       id: string;
@@ -15,10 +20,14 @@ interface ExtractIconsMessage {
   };
 }
 
-interface ErrorMessage {
-  type: "error";
+export interface PluginToUIMessage {
+  pluginMessage:
+    | ExtractIconsMessage
+    | {
+        type: typeof MESSAGE_TYPES.ERROR;
+      };
 }
 
-export interface UIMessageType {
-  pluginMessage: ExtractIconsMessage | ErrorMessage;
-}
+export type UIToPluginMessage =
+  | { type: typeof MESSAGE_TYPES.EXTRACT_ICONS }
+  | { type: typeof MESSAGE_TYPES.ERROR };
