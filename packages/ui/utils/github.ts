@@ -1,5 +1,5 @@
 import { Octokit } from "@octokit/core";
-import { SVGNode } from "../../types";
+import { SVGContent } from "../../types";
 
 // 레포의 기본 브랜치 정보 가져오기
 export const getBaseBranch = async ({
@@ -125,7 +125,7 @@ export const createBlobs = async ({
   owner: string;
   repo: string;
   folderPath: string;
-  svgNodes: SVGNode[];
+  svgNodes: SVGContent[];
 }): Promise<{ path: string; mode: "100644"; type: "blob"; sha: string }[]> => {
   return Promise.all(
     svgNodes.map(async (node) => {
