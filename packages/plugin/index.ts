@@ -6,12 +6,16 @@ figma.showUI(__html__, { width: 400, height: 600 });
 const extractSvgNodes = async () => {
   const selectedFrames = figma.currentPage.selection;
 
-  if (
-    selectedFrames.length === 0 ||
-    !selectedFrames.every((frame) => frame.type === "FRAME")
-  ) {
-    figma.notify("select frames which contains SVG nodes", {
+  const isSelectedFrames =
+    selectedFrames.length > 0 &&
+    selectedFrames.every((frame) => frame.type === "FRAME");
+
+  if (!isSelectedFrames) {
+    figma.notify("Select frames which contains SVG nodes", {
       error: true,
+    });
+    figma.ui.postMessage({
+      type: "error",
     });
     return;
   }
@@ -19,8 +23,11 @@ const extractSvgNodes = async () => {
   const svgNodes = selectedFrames.flatMap((frame) => getSvgNodes(frame));
 
   if (svgNodes.length === 0) {
-    figma.notify("no SVG nodes found in the selected frame", {
+    figma.notify("No SVG nodes found in the selected frame", {
       error: true,
+    });
+    figma.ui.postMessage({
+      type: "error",
     });
     return;
   }
@@ -36,11 +43,15 @@ const extractSvgNodes = async () => {
   return svgNodesData;
 };
 
-interface ExtractIcons {
+interface ExtractIconsMessage {
   type: "extractIcons";
 }
 
-type MessageType = ExtractIcons;
+interface ErrorMessage {
+  type: "error";
+}
+
+type MessageType = ExtractIconsMessage | ErrorMessage;
 
 // UI로부터 메세지를 받아 처리
 figma.ui.onmessage = async (msg: MessageType) => {

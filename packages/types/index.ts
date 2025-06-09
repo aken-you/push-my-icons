@@ -15,6 +15,10 @@ interface ExtractIconsMessage {
   };
 }
 
+interface ErrorMessage {
+  type: "error";
+}
+
 export interface UIMessageType {
-  pluginMessage: ExtractIconsMessage;
+  pluginMessage: ExtractIconsMessage | ErrorMessage;
 }

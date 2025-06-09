@@ -68,9 +68,10 @@ export const Create = () => {
 
   useEffect(() => {
     window.onmessage = async (event: MessageEvent<UIMessageType>) => {
-      const { type, payload } = event.data.pluginMessage;
+      const { type } = event.data.pluginMessage;
 
       if (type === "extractIcons") {
+        const { payload } = event.data.pluginMessage;
         const { nodes } = payload;
 
         const decoder = new TextDecoder("utf-8");
@@ -235,6 +236,9 @@ export const Create = () => {
           }
           setLoadingStep(0);
         }
+      }
+      if (type === "error") {
+        setLoadingStep(0);
       }
     };
   }, [repoUrl, token, folderPath, prTitle, prBody, includeChangedFilesSummary]);
